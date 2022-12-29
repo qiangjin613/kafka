@@ -28,9 +28,18 @@ public class SendRecordByMyPartitioner {
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties);
         // 异步发送数据 - callback
         for (int i = 0; i < 10; i++) {
-            Future<RecordMetadata> metadataFuture = kafkaProducer.send(new ProducerRecord<>("topicA", "hello Kafka " + i), (metadata, exception) -> {
+            Future<RecordMetadata> metadataFuture = kafkaProducer.send(new ProducerRecord<>("topicA", "aa hello Kafka " + i), (metadata, exception) -> {
                 if (exception == null) {
                     System.out.println("主题：" + metadata.topic() + "，分区：" + metadata.partition());
+                } else {
+                    exception.printStackTrace();
+                }
+            });
+            Future<RecordMetadata> metadataFuture2 = kafkaProducer.send(new ProducerRecord<>("topicA", "cc hello Kafka " + i), (metadata, exception) -> {
+                if (exception == null) {
+                    System.out.println("主题：" + metadata.topic() + "，分区：" + metadata.partition());
+                } else {
+                    exception.printStackTrace();
                 }
             });
         }
@@ -39,3 +48,9 @@ public class SendRecordByMyPartitioner {
         kafkaProducer.close();
     }
 }
+// 【可能出现的异常】
+// org.apache.kafka.common.errors.TimeoutException: Expiring 10 record(s) for topicA-1:120006 ms has passed since batch creation
+// 不存在 topicA 主题的 1 分区
+//
+// org.apache.kafka.common.errors.TimeoutException: Topic topicA not present in metadata after 60000 ms.
+// 可能是 192.168.1.100:9092 的防火墙没关。。。

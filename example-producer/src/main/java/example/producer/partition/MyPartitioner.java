@@ -15,7 +15,7 @@ import java.util.Map;
 public class MyPartitioner implements Partitioner {
     @Override
     public int partition(String topic, Object key, byte[] keyBytes, Object value, byte[] valueBytes, Cluster cluster) {
-        return value.toString().contains("a") ? 0 : 1;
+        return value.toString().charAt(0) == 'a' ? 0 : 1;
     }
 
     @Override
