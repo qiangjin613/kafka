@@ -1,4 +1,4 @@
-package example.consumer;
+package example.consumer.group;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -11,11 +11,9 @@ import java.util.Collections;
 import java.util.Properties;
 
 /**
- * 拉取消息
- * <p>
- *
+ * 消费者组示例
  */
-public class PullRecord {
+public class ConsumeGroupDemo1 {
     public static void main(String[] args) {
         // 填充配置
         Properties properties = new Properties();
@@ -26,12 +24,12 @@ public class PullRecord {
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         // 指定 Consumer Group ID
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "t");
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "groupA");
 
         // 创建 Kafka Consumer 对象
         try (KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(properties)) {
             // 订阅主题
-            kafkaConsumer.subscribe(Collections.singletonList("topicA"));
+            kafkaConsumer.subscribe(Collections.singletonList("serverMorePartition"));
             // 拉取数据
             while (true) {
                 ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(Duration.ofSeconds(1));

@@ -1,9 +1,10 @@
-package example.consumer;
+package example.consumer.partition;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.time.Duration;
@@ -11,11 +12,9 @@ import java.util.Collections;
 import java.util.Properties;
 
 /**
- * 拉取消息
- * <p>
- *
+ * 根据指定分区拉取数据
  */
-public class PullRecord {
+public class PullRecordByPartition {
     public static void main(String[] args) {
         // 填充配置
         Properties properties = new Properties();
@@ -30,8 +29,8 @@ public class PullRecord {
 
         // 创建 Kafka Consumer 对象
         try (KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(properties)) {
-            // 订阅主题
-            kafkaConsumer.subscribe(Collections.singletonList("topicA"));
+            // 订阅主题 & 指定分区
+            kafkaConsumer.assign(Collections.singletonList(new TopicPartition("topicA", 0)));
             // 拉取数据
             while (true) {
                 ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(Duration.ofSeconds(1));

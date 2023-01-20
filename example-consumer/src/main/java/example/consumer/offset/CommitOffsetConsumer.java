@@ -1,4 +1,4 @@
-package example.consumer;
+package example.consumer.offset;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -11,11 +11,12 @@ import java.util.Collections;
 import java.util.Properties;
 
 /**
- * 拉取消息
+ * 手动提交 Offset
  * <p>
- *
+ *     1. commitSync（同步提交）
+ *     2. commitAsync（异步提交）
  */
-public class PullRecord {
+public class CommitOffsetConsumer {
     public static void main(String[] args) {
         // 填充配置
         Properties properties = new Properties();
@@ -27,21 +28,24 @@ public class PullRecord {
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         // 指定 Consumer Group ID
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, "t");
+        // 关闭自动提交 Offset
+        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
 
-        // 创建 Kafka Consumer 对象
+        // 拉取数据
         try (KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(properties)) {
             // 订阅主题
             kafkaConsumer.subscribe(Collections.singletonList("topicA"));
-            // 拉取数据
+            // 消费数据
             while (true) {
                 ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(Duration.ofSeconds(1));
                 for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                    // 简单地打印对象
                     System.out.println(consumerRecord);
                 }
+                // 同步提交 offset
+                kafkaConsumer.commitSync();
+                // 异步提交 offset
+                // kafkaConsumer.commitAsync();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

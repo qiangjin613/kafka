@@ -41,11 +41,11 @@ public class SendRecord {
         try (KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties)) {
             // 异步发送数据
             for (int i = 0; i < 10; i++) {
-                Future<RecordMetadata> metadataFuture = kafkaProducer.send(new ProducerRecord<>("topicA", "hello Kafka " + i));
+                Future<RecordMetadata> metadataFuture = kafkaProducer.send(new ProducerRecord<>("serverMorePartition", "hello Kafka " + i));
             }
             // 异步发送数据 - callback
             for (int i = 0; i < 10; i++) {
-                Future<RecordMetadata> metadataFuture = kafkaProducer.send(new ProducerRecord<>("topicA", "hello Kafka " + i), (metadata, exception) -> {
+                Future<RecordMetadata> metadataFuture = kafkaProducer.send(new ProducerRecord<>("serverMorePartition", "hello Kafka " + i), (metadata, exception) -> {
                     if (exception == null) {
                         System.out.println("主题：" + metadata.topic() + "，分区：" + metadata.partition());
                     }
@@ -54,7 +54,7 @@ public class SendRecord {
             // 同步发送数据
             for (int i = 0; i < 10; i++) {
                 try {
-                    RecordMetadata metadata = kafkaProducer.send(new ProducerRecord<>("topicA", "hello Kafka " + i)).get();
+                    RecordMetadata metadata = kafkaProducer.send(new ProducerRecord<>("serverMorePartition", "hello Kafka " + i)).get();
                 } catch (InterruptedException | ExecutionException e) {
                     throw new RuntimeException(e);
                 }
